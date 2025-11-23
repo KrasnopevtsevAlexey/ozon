@@ -27,17 +27,27 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const [cartItem, setCartItem] = useState<CartItem[]>([]);
 
   const addToCart = useCallback((product: Product) => {
+   
+    console.log('🛒 ADD_TO_CART called for:', product.id, product.title);
     setCartItem((prev) => {
+      console.log('📦 Previous cart:', prev);
       const findProduct = prev.find((p) => p.id === product.id);
+       console.log('🔍 Existing item:', findProduct);
+      
       if (findProduct) {
-        return prev.map((p) => {
-          if (p.id === product.id) {
-            return { ...p, count: p.count++ };
-          }
-          return p;
-        });
+        const newCart = prev.map((p) => 
+         
+          p.id === product.id 
+          ? { ...p, count: p.count + 1 }
+          : p
+        );
+         console.log('➕ Updated cart:', newCart);
+          return newCart;
+        
       } else {
-        return [...prev, { ...product, count: 1 }];
+        const newCart = [...prev, { ...product, count: 1 }];
+      console.log('🆕 New cart:', newCart);
+        return newCart;
       }
     });
 
