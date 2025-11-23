@@ -3,13 +3,17 @@
 import { useCart } from "../providers/CartProvider";
 
 export default function CartBtn() {
-   const { setIsOpen} = useCart() 
+   const { setIsOpen, cartItem} = useCart() 
     
+const totalCart = cartItem.reduce((total, item)=>
+  {
+return total + item.count
+  }, 0)
 
   return (
     <a href="#" id="cart" onClick={(e)=>{e.preventDefault(); 
     setIsOpen(true)}}>
-      <span className="counter">0</span>
+      <span className="counter">{totalCart}</span>
       <span className="icon">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <path

@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useState,
+  useCallback,
+} from "react";
 import { CartContextType } from "../models/cart-context.model";
 import { CartItem } from "../models/cart-item.model";
 import { Product } from "../models/product.model";
@@ -20,13 +26,13 @@ export default function CartProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [cartItem, setCartItem] = useState<CartItem[]>([]);
 
-  const addToCart = (product: Product) => {
+  const addToCart = useCallback((product: Product) => {
     setCartItem((prev) => {
-      const findProduct = cartItem.find((p) => p.id === product.id);
+      const findProduct = prev.find((p) => p.id === product.id);
       if (findProduct) {
         return prev.map((p) => {
-          if (p.id === findProduct.id) {
-            p.count++;
+          if (p.id === product.id) {
+            return { ...p, count: p.count++ };
           }
           return p;
         });
@@ -36,36 +42,31 @@ export default function CartProvider({ children }: { children: ReactNode }) {
     });
 
     // setCartItem([{...product, count: 1}])
+  }, []);
+  const deleteCartItem = (product: Product) => {
+    setCartItem((prev) => {
+      const findProduct = cartItem.find((p) => p.id === product.id);
+      if (findProduct) {
+        if (findProduct.count > 1) {
+          return prev.map((p) => {
+            if (p.id === findProduct.id) {
+              return { ...p, count: p.count - 1 };
+            } else {
+              return p;
+            }
+          });
+        } else {
+          return prev.filter((p) => p.id !== product.id);
+        }
+      } else {
+        return prev;
+      }
+    });
   };
-const deleteCartItem = (product: Product)=>{
-
-    setCartItem((prev)=>{
-        const findProduct = cartItem.find((p) => p.id === product.id);
-if(findProduct){
-    if(findProduct.count > 1){
-        return prev.map((p) => {
-           if (p.id === findProduct.id) {
-            return {...p, count: p.count - 1};
-          }else{
-            return p;
-          }
-           
-        })
-
-    }else{
-        return prev.filter((p) => p.id !== product.id)
-    }
-
-
-}else{
-return prev
-}
-
-        
-    })
-}
   return (
-    <cartContext.Provider value={{ isOpen, cartItem, setIsOpen, addToCart, deleteCartItem }}>
+    <cartContext.Provider
+      value={{ isOpen, cartItem, setIsOpen, addToCart, deleteCartItem }}
+    >
       {children}
     </cartContext.Provider>
   );
