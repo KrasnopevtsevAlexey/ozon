@@ -48,17 +48,14 @@
 //     </div>
 //   );
 // }
-"use client";
-
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
-export default function Search() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   
-  // Инициализируем состояние из URL параметров
   const [search, updateSearch] = useState(searchParams.get("search") || "");
 
   const updateFilter = (value: string) => {
@@ -75,7 +72,6 @@ export default function Search() {
 
   const handleSubmit = () => {
     updateFilter(search);
-    
   };
 
   return (
@@ -93,5 +89,19 @@ export default function Search() {
         <button onClick={handleSubmit}></button>
       </div>
     </div>
+  );
+}
+
+export default function Search() {
+  return (
+    <Suspense fallback={
+      <div className="search">
+        <div className="search-wrapper">
+          <input className="search-wrapper_input" type="text" placeholder="Loading..." disabled />
+        </div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }

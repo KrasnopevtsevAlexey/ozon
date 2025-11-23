@@ -40,16 +40,15 @@
 'use client'
 
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, Suspense } from "react"
 
-export default function Filter() {
+function FilterContent() {
   const [isOpen, setIsOpen] = useState(false)
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
   const filterRef = useRef<HTMLDivElement>(null)
 
-  // Закрытие по клику вне компонента и по Escape
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
@@ -82,7 +81,7 @@ export default function Filter() {
       param.delete('category')
     }
     router.replace(`${pathname}?${param.toString()}`)
-    setIsOpen(false) // Закрываем после выбора
+    setIsOpen(false)
   }
 
   const toggleCatalog = () => {
@@ -100,10 +99,24 @@ export default function Filter() {
           <li onClick={() => updateFilter('Игровая приставка')}>Игровая приставка</li>
           <li onClick={() => updateFilter('Периферия для ПК')}>Периферия для ПК</li>
           <li onClick={() => updateFilter('Игры и софт')}>Игры и софт</li>
-          {/* Опционально: кнопка сброса фильтра */}
           <li onClick={() => updateFilter('')}>Сбросить фильтр</li>
         </ul>
       </div>
     </div>
+  )
+}
+
+export default function Filter() {
+  return (
+    <Suspense fallback={
+      <div className="catalog-button">
+        <button disabled>
+          <span className="catalog-button_burger"></span>
+          <span className="catalog-button_text">Загрузка...</span>
+        </button>
+      </div>
+    }>
+      <FilterContent />
+    </Suspense>
   )
 }
