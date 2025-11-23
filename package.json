@@ -6,7 +6,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "export": "next build && next export",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d out"
   },
   "dependencies": {
     "next": "16.0.3",
@@ -24,5 +27,6 @@
     "sass": "^1.94.2",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "homepage": "https://github.com/KrasnopevtsevAlexey/ozon-next.git"
 }
